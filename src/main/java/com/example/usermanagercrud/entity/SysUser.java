@@ -1,17 +1,28 @@
 package com.example.usermanagercrud.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 @TableName("sys_user")
 public class SysUser {
-    @TableId(type = IdType.AUTO)
     private Long userId;
     private String username;
     private String password;
+    private String email;
+    private String phone;
+    private String nickname;
+    private String avatar;
+    private String realName;
+    private Integer gender;
+    private Date birthday;
     private Integer status;
-    // 其他字段省略，只保留登录所需字段
+    private Integer userType;
+    private Integer isVerified;
+    private String inviteCode;
+    private Long invitedBy;
+    private Date createTime;
+    private Date updateTime;
 }
