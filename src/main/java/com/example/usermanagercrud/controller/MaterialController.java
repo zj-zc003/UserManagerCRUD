@@ -1,22 +1,23 @@
 package com.example.usermanagercrud.controller;
 
 
+import com.example.usermanagercrud.dto.MaterialDTO;
 import com.example.usermanagercrud.dto.StorageResult;
 import com.example.usermanagercrud.entity.Material;
 import com.example.usermanagercrud.mapper.FileTypeMapper;
 import com.example.usermanagercrud.mapper.MaterialMapper;
+import com.example.usermanagercrud.service.MaterialService;
 import com.example.usermanagercrud.service.StorageService;
 import com.example.usermanagercrud.service.StorageServiceFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/materials")
@@ -25,16 +26,17 @@ public class MaterialController {
     private final StorageServiceFactory storageServiceFactory;
     private final MaterialMapper materialMapper;
     private final FileTypeMapper fileTypeMapper;
-    
+    private final MaterialService materialService;
+
     @Autowired
-    public MaterialController(StorageServiceFactory storageServiceFactory, 
-                              MaterialMapper materialMapper,
-                              FileTypeMapper fileTypeMapper) {
+    public MaterialController(StorageServiceFactory storageServiceFactory, MaterialMapper materialMapper, FileTypeMapper fileTypeMapper, MaterialService materialService) {
         this.storageServiceFactory = storageServiceFactory;
         this.materialMapper = materialMapper;
         this.fileTypeMapper = fileTypeMapper;
+        this.materialService = materialService;
     }
-    
+
+
     @PostMapping("/upload")
     public ResponseEntity<?> uploadMaterial(
             @RequestParam("file") MultipartFile file,
@@ -103,4 +105,71 @@ public class MaterialController {
             return ResponseEntity.internalServerError().body("上传失败: " + e.getMessage());
         }
     }
+
+    // 获取素材列表
+    @GetMapping
+    public ResponseEntity<List<MaterialDTO>> getMaterials(
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String fileType,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(defaultValue = "created_at") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder) {
+
+        List<Material> materials = materialService.getFilteredMaterials(
+                search, fileType, categoryId, sortBy, sortOrder
+        );
+
+        List<MaterialDTO> dtos = materials.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(dtos);
+    }
+
+    // 下载素材
+    @PostMapping("/{id}/download")
+    public ResponseEntity<?> recordDownload(@PathVariable Long id) {
+        materialService.incrementDownloadCount(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // 获取素材详情
+    @GetMapping("/{id}")
+    public ResponseEntity<MaterialDTO> getMaterialDetails(@PathVariable Long id) {
+        Material material = materialService.getMaterialById(id);
+        materialService.incrementViewCount(id);
+        return ResponseEntity.ok(convertToDTO(material));
+    }
+
+    // 删除素材
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteMaterial(@PathVariable Long id) {
+        materialService.softDeleteMaterial(id);
+        return ResponseEntity.ok().build();
+    }
+
+    // 实体转DTO
+    private MaterialDTO convertToDTO(Material material) {
+        MaterialDTO dto = new MaterialDTO();
+        dto.setId(material.getId());
+        dto.setTitle(material.getTitle());
+        dto.setDescription(material.getDescription());
+        dto.setFileName(material.getFileName());
+        dto.setFileKey(material.getFileKey());
+        dto.setFileSize(material.getFileSize());
+        dto.setFileType(material.getFileType());
+        dto.setFileFormat(material.getFileFormat());
+        dto.setCategoryId(material.getCategoryId());
+        dto.setDownloadCount(material.getDownloadCount());
+        dto.setViewCount(material.getViewCount());
+        dto.setCreatedAt(material.getCreatedAt());
+        dto.setUpdatedAt(material.getUpdatedAt());
+
+        // 获取文件访问URL
+        StorageService storageService = storageServiceFactory.getStorageService();
+        dto.setFileUrl(storageService.getUrl(material.getFileKey()));
+
+        return dto;
+    }
+
 }
