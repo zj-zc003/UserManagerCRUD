@@ -29,7 +29,7 @@ public class AuthService {
             }
 
             // 2. 安全查询 - 使用参数化查询防止SQL注入
-            SysUser user = userMapper.findByUsername(dto.getUsername());
+            SysUser user = userMapper.findByUsernameAndPassword(dto.getUsername(), dto.getPassword());
 
             // 3. 统一返回模糊错误信息
             if (user == null || !dto.getPassword().equals(user.getPassword())) {
@@ -42,7 +42,7 @@ public class AuthService {
                 return new LoginResult(false, "用户已被禁用");
             }
 
-            return new LoginResult(true, "登录成功");
+            return new LoginResult(true, "登录成功", user.getUserId());
         } catch (Exception e) {
             logger.error("登录异常: {}", e.getMessage(), e);
             return new LoginResult(false, "系统异常，请稍后重试");

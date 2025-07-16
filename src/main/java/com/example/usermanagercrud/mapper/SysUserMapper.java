@@ -10,5 +10,8 @@ import org.apache.ibatis.annotations.Select;
 public interface SysUserMapper extends BaseMapper<SysUser> {
     @Select("SELECT user_id, password, status FROM sys_user WHERE username = #{username} LIMIT 1")
     SysUser findByUsername(@Param("username") String username);
+    @Select("SELECT * FROM sys_user WHERE username = #{username} AND password = #{password} LIMIT 1")
+    SysUser findByUsernameAndPassword(@Param("username") String username, @Param("password") String password);
+
 }
 
