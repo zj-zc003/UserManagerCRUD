@@ -1,5 +1,7 @@
 package com.example.usermanagercrud.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.example.usermanagercrud.dto.TeacherInfo;
 import com.example.usermanagercrud.entity.Material;
 import org.apache.ibatis.annotations.*;
 
@@ -7,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 @Mapper
-public interface MaterialMapper {
+public interface MaterialMapper extends BaseMapper<Material> {
 
     @Insert("INSERT INTO material (title, description, file_name, file_key, file_size, file_type, file_format, " +
             "category_id, download_count, view_count, is_deleted, created_by, created_at, updated_at) " +

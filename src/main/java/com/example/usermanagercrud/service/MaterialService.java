@@ -1,7 +1,10 @@
 package com.example.usermanagercrud.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.example.usermanagercrud.entity.Material;
 import com.example.usermanagercrud.mapper.MaterialMapper;
+import com.example.usermanagercrud.model.BusinessException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,4 +50,36 @@ public class MaterialService {
     public void softDeleteMaterial(Long id) {
         materialMapper.softDelete(id);
     }
+
+    public void validateMaterialExists(String fileKey) {
+        if (StringUtils.isBlank(fileKey)) {
+            throw new BusinessException("素材key不能为空");
+        }
+
+        int count = materialMapper.selectCount(
+                new QueryWrapper<Material>().eq("file_key", fileKey)).intValue();
+
+        if (count == 0) {
+            throw new BusinessException("素材不存在: " + fileKey);
+        }
+    }
+
+    public void validateMaterialExists(Long materialId) {
+        if (materialId == null || materialId <= 0) {
+            throw new BusinessException("素材ID不能为空");
+        }
+
+        int count = materialMapper.selectCount(
+                new QueryWrapper<Material>().eq("id", materialId)).intValue();
+
+        if (count == 0) {
+            throw new BusinessException("素材不存在: " + materialId);
+        }
+    }
+
+    public Material getByKey(String fileKey) {
+        return materialMapper.selectOne(
+                new QueryWrapper<Material>().eq("file_key", fileKey));
+    }
+
 }
