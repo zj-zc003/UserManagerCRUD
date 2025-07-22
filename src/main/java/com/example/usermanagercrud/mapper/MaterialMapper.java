@@ -1,7 +1,6 @@
 package com.example.usermanagercrud.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.usermanagercrud.dto.TeacherInfo;
 import com.example.usermanagercrud.entity.Material;
 import org.apache.ibatis.annotations.*;
 

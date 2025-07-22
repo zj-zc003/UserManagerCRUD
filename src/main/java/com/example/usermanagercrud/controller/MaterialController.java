@@ -44,22 +44,22 @@ public class MaterialController {
             @RequestParam(value = "description", required = false) String description,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "userId", required = false) Long userId) { // 通过参数传递用户ID
-        
+
         try {
             // 基本验证
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().body("请选择要上传的文件");
             }
-            
+
             // 获取存储服务
             StorageService storageService = storageServiceFactory.getStorageService();
-            
+
             // 上传文件
             StorageResult result = storageService.upload(file);
             if (!result.isSuccess()) {
                 return ResponseEntity.internalServerError().body(result.getMessage());
             }
-            
+
             // 创建素材记录
             Material material = new Material();
             material.setTitle(title != null ? title : file.getOriginalFilename());
@@ -67,31 +67,31 @@ public class MaterialController {
             material.setFileName(file.getOriginalFilename());
             material.setFileKey(result.getFileKey());
             material.setFileSize(file.getSize());
-            
+
             // 设置文件类型和格式
             String mimeType = file.getContentType();
             material.setFileType(fileTypeMapper.mapToFileType(mimeType));
             material.setFileFormat(fileTypeMapper.getFileFormat(file.getOriginalFilename()));
-            
+
             // 设置其他字段
             material.setCategoryId(categoryId);
             material.setDownloadCount(0);
             material.setViewCount(0);
             material.setIsDeleted(false);
-            
+
             // 用户和时间信息
             if (userId == null) {
                 userId = 1L; // 默认用户ID
             }
             material.setCreatedBy(userId);
-            
+
             LocalDateTime now = LocalDateTime.now();
             material.setCreatedAt(now);
             material.setUpdatedAt(now);
-            
+
             // 保存到数据库
             materialMapper.insertMaterial(material);
-            
+
             return ResponseEntity.ok(Map.of(
                 "id", material.getId(),
                 "title", material.getTitle(),
@@ -100,7 +100,7 @@ public class MaterialController {
                 "url", storageService.getUrl(result.getFileKey()),
                 "createdAt", now
             ));
-            
+
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body("上传失败: " + e.getMessage());
         }

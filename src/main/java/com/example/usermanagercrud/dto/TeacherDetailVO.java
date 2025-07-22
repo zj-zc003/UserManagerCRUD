@@ -1,5 +1,6 @@
 package com.example.usermanagercrud.dto;
 
+import com.example.usermanagercrud.entity.TeacherInfo;
 import lombok.Data;
 
 // TeacherDetailVO.java

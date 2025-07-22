@@ -95,4 +95,10 @@ public class LocalStorageService implements StorageService {
         // 目前只返回文件路径
         return Paths.get(uploadDir, fileKey).toString();
     }
+
+    @Override
+    public String generatePresignedUrl(String fileKey) {
+        return "";
+    }
+
 }

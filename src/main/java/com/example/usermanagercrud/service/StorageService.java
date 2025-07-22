@@ -24,4 +24,6 @@ public interface StorageService {
      * @return 文件访问URL
      */
     String getUrl(String fileKey);
+    // 增加OSS支持方法
+    String generatePresignedUrl(String fileKey);
 }

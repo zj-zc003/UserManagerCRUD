@@ -1,10 +1,10 @@
 package com.example.usermanagercrud.controller;
 
 import com.example.usermanagercrud.dto.CategoryDTO;
+import com.example.usermanagercrud.dto.R;
 import com.example.usermanagercrud.entity.MaterialCategory;
 import com.example.usermanagercrud.service.MaterialCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,43 +18,43 @@ public class CategoryController {
     
     // 获取所有分类（树形结构）
     @GetMapping
-    public ResponseEntity<List<CategoryDTO>> getCategoryTree() {
+    public R<List<CategoryDTO>> getCategoryTree() {
         List<CategoryDTO> categoryTree = categoryService.getCategoryTree();
-        return ResponseEntity.ok(categoryTree);
+        return R.success(categoryTree);
     }
     
     // 创建分类
     @PostMapping
-    public ResponseEntity<MaterialCategory> createCategory(@RequestBody MaterialCategory category,
+    public R<MaterialCategory> createCategory(@RequestBody MaterialCategory category,
                                                            @RequestAttribute Long userId) {
         category.setCreatedBy(userId);
         MaterialCategory created = categoryService.createCategory(category, userId);
-        return ResponseEntity.ok(created);
+        return R.success(created);
     }
     
     // 更新分类
     @PutMapping("/{id}")
-    public ResponseEntity<MaterialCategory> updateCategory(@PathVariable Long id, 
+    public R<MaterialCategory> updateCategory(@PathVariable Long id, 
                                                           @RequestBody MaterialCategory category,
                                                           @RequestAttribute Long userId) {
         if (!id.equals(category.getId())) {
             throw new IllegalArgumentException("ID不匹配");
         }
         MaterialCategory updated = categoryService.updateCategory(category);
-        return ResponseEntity.ok(updated);
+        return R.success(updated);
     }
     
     // 删除分类
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteCategory(@PathVariable Long id) {
+    public R<Void> deleteCategory(@PathVariable Long id) {
         categoryService.deleteCategory(id);
-        return ResponseEntity.noContent().build();
+        return R.success();
     }
     
     // 更新分类排序
     @PostMapping("/reorder")
-    public ResponseEntity<Void> reorderCategories(@RequestBody List<Long> categoryIds) {
+    public R<Void> reorderCategories(@RequestBody List<Long> categoryIds) {
         categoryService.updateCategoryOrder(categoryIds);
-        return ResponseEntity.ok().build();
+        return R.success();
     }
 }

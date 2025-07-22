@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.example.usermanagercrud.dto.*;
 import com.example.usermanagercrud.entity.KnowledgeProduct;
 import com.example.usermanagercrud.entity.ProductChapter;
+import com.example.usermanagercrud.entity.TeacherInfo;
 import com.example.usermanagercrud.entity.UserAccess;
 import com.example.usermanagercrud.mapper.KnowledgeProductMapper;
 import com.example.usermanagercrud.mapper.ProductChapterMapper;
@@ -81,6 +82,9 @@ public class ProductServiceImpl implements ProductService {
         if (StringUtils.isNotBlank(dto.getCoverKey())) {
             materialService.validateMaterialExists(dto.getCoverKey());
             product.setCoverKey(dto.getCoverKey());
+        }
+        if(StringUtils.isNotBlank(dto.getCoverImg())){
+            product.setCoverKey(dto.getCoverImg());
         }
         
         // 保存产品

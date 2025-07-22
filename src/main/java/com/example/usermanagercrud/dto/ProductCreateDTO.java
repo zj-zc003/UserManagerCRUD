@@ -48,6 +48,8 @@ public class ProductCreateDTO {
     private Long teacherId;
     
     private Long categoryId;
+    private Long createUser;
+    private String coverImg;
     private Boolean isRecommend = false;
     private Integer sort = 0;
     

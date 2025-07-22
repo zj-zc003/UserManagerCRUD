@@ -13,9 +13,10 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface KnowledgeProductMapper extends BaseMapper<KnowledgeProduct> {
 
-    @Select("SELECT p.*, t.real_name AS teacherName " +
+    @Select("SELECT p.*, u.real_name AS teacherName " +
             "FROM knowledge_product p " +
             "LEFT JOIN teacher_info t ON p.teacher_id = t.id " +
+            "LEFT JOIN sys_user u ON t.user_id = u.user_id " +
             "${ew.customSqlSegment}")
     Page<ProductListVO> selectProductPage(Page<ProductListVO> page,
                                           @Param(Constants.WRAPPER) QueryWrapper<ProductListVO> wrapper);
