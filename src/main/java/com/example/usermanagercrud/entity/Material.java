@@ -21,6 +21,7 @@ public class Material {
     private Long createdBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Integer duration;
 
     // Getters and Setters
     public Long getId() {

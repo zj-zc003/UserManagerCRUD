@@ -168,8 +168,29 @@ public class MaterialController {
         // 获取文件访问URL
         StorageService storageService = storageServiceFactory.getStorageService();
         dto.setFileUrl(storageService.getUrl(material.getFileKey()));
+        // 获取原始文件路径
+        String originalPath = dto.getFileUrl();
+        // 转换路径为完整 HTTP URL
+        if (originalPath != null && !originalPath.isEmpty()) {
+            // 标准化路径：将反斜杠替换为正斜杠，去除开头的 "./" 或 ".\"
+            String normalizedPath = originalPath
+                    .replace("\\", "/")
+                    .replaceAll("^\\./", "");
+
+            // 构建完整 URL
+            String fullUrl = "http://localhost:8080/" + normalizedPath;
+            dto.setFileUrl2(fullUrl);
+        } else {
+            dto.setFileUrl2(""); // 或使用默认值
+        }
 
         return dto;
+    }
+
+    @PostMapping("/{id}/view")
+    public ResponseEntity<?> recordView(@PathVariable Long id) {
+        materialService.incrementViewCount(id);
+        return ResponseEntity.ok().build();
     }
 
 }

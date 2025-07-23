@@ -20,6 +20,7 @@ public class MaterialDTO {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String fileUrl; // 文件访问URL
-    
+    private String fileUrl2; // 文件访问URL
+
     // Getters and Setters
 }
